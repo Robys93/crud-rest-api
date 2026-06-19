@@ -11,22 +11,6 @@ DTO in input/output e documentazione **Swagger**.
 
 ---
 
-## Perché Java (e Spring Boot)
-
-La posizione è su **C# / .NET** e la consegna lasciava libertà tra C#, Java, Kotlin e TypeScript.
-Ho scelto **Java con Spring Boot** per due motivi concreti:
-
-- **È il linguaggio principale del mio stack.** Lo uso quotidianamente con Spring Boot, quindi posso
-  concentrare il tempo sul ragionamento di design (l'astrazione richiesta) invece che sulla sintassi.
-- **Spring Boot è molto vicino a .NET come modello mentale.** Dependency injection, controller annotati,
-  layering service/repository: i concetti si trasferiscono quasi 1:1 su ASP.NET Core, quindi le scelte
-  fatte qui restano leggibili e valutabili anche per un team .NET.
-
-Java e C# condividono un sistema di tipi simile, e proprio i **generics** sono il cuore della soluzione
-di riuso: la stessa idea (`GenericController<T, DTO, ID>`) si tradurrebbe quasi identica in C#.
-
----
-
 ## Stack tecnico
 
 | Componente | Versione / Scelta |
@@ -72,7 +56,26 @@ L'applicazione parte su `http://localhost:8080`.
 
 ---
 
-## Come ho impostato il riuso (il punto centrale)
+## Scelte progettuali
+
+> Questa sezione risponde direttamente al punto della consegna: *quale linguaggio ho scelto e perché,
+> come ho strutturato il codice, cosa ho trovato difficile e cosa migliorerei avendo più tempo.*
+
+### Linguaggio e perché
+
+La posizione è su **C# / .NET** e la consegna lasciava libertà tra C#, Java, Kotlin e TypeScript.
+Ho scelto **Java con Spring Boot** per due motivi concreti:
+
+- **È il linguaggio principale del mio stack.** Lo uso quotidianamente con Spring Boot, quindi posso
+  concentrare il tempo sul ragionamento di design (l'astrazione richiesta) invece che sulla sintassi.
+- **Spring Boot è molto vicino a .NET come modello mentale.** Dependency injection, controller annotati,
+  layering service/repository: i concetti si trasferiscono quasi 1:1 su ASP.NET Core, quindi le scelte
+  fatte qui restano leggibili e valutabili anche per un team .NET.
+
+Java e C# condividono un sistema di tipi simile, e proprio i **generics** sono il cuore della soluzione
+di riuso: la stessa idea (`GenericController<T, DTO, ID>`) si tradurrebbe quasi identica in C#.
+
+### Come ho strutturato il codice (il punto centrale)
 
 Le due entità condividono esattamente le stesse cinque operazioni, quindi ho spostato quella logica
 **una volta sola** in un layer generico nel package `common`, parametrizzato su tre tipi:
@@ -101,9 +104,7 @@ I controller concreti restano classi vuote che estendono il generico: Spring ris
 dal sottotipo concreto, quindi `@RequestBody DTO` e `@PathVariable ID` vengono deserializzati nel tipo
 giusto a runtime.
 
----
-
-## Cosa ho trovato difficile
+### Cosa ho trovato difficile
 
 Sono onesto: non è stato tutto liscio.
 
@@ -121,9 +122,7 @@ Sono onesto: non è stato tutto liscio.
   perché la generazione dell'id dipende dalla strategia di persistenza concreta; tenerlo del tutto
   generico (`ID` qualsiasi) avrebbe complicato il codice senza un beneficio reale per questo esercizio.
 
----
-
-## Cosa migliorerei avendo più tempo
+### Cosa migliorerei avendo più tempo
 
 - **MapStruct** al posto dei mapper scritti a mano: meno codice ripetitivo e mapping verificato a
   compile-time.
